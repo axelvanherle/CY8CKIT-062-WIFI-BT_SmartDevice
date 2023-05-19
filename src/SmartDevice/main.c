@@ -1,5 +1,11 @@
+// Standard includes
 #include "cyhal.h"
 #include "cybsp.h"
+// For printing over UART
+#include "cy_retarget_io.h"
+
+// For display
+#include "smartdevice_display.h"
 
 int main(void)
 {
@@ -16,6 +22,19 @@ int main(void)
 
     // Enable global interrupts
     __enable_irq();
+
+    // Initialize uart
+    cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, CY_RETARGET_IO_BAUDRATE);
+    // Ascii sequence to clear the screen
+    printf("\x1b[2J\x1b[;H");
+
+    /* Initialize the display controller */
+    result = mtb_st7789v_init8(&tft_pins);
+    CY_ASSERT(result == CY_RSLT_SUCCESS);
+    GUI_Init();
+
+    GUI_DispString("Hello world!");
+    printf("Hello world!\n\r");
 
     while(1)
     {
